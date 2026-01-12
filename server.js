@@ -11,9 +11,7 @@ const port = 3000;
 
 const arr= [];
 app.get("/", (req, res) => {
-    res.json({
-        data: arr,
-    });
+    res.status(200).json(arr[req.params.index]);
 })
 
 app.listen(port, () => {
@@ -21,14 +19,15 @@ app.listen(port, () => {
 })
 
 app.post('/users', (req, res) => {
-    const {email, password, id} = req.body;
-    if(!password || !email || !id) {
-        return res.status(400).send('Email, password and id are required');
+    const {email, password} = req.body;
+    if(!email || !password) {
+        return res.status(400).send('Valid email and password are required');
+    } else {
+        arr.push(req.body);
+        console.log('User created: ', arr);
+        res.status(201).json(arr);
     }
 
-    arr.push(req.body);
-    console.log('User created: ', arr);
-    res.status(200).json(arr);
 });
 
 app.put('/users/:id', (req, res) => {
@@ -41,6 +40,17 @@ app.put('/users/:id', (req, res) => {
     }
 
     arr[userIndex] = {email, password, id};
-    console.log('User updated:', req.body);
-    res.status(200).send({password});
+    console.log('User updated:', arr[userIndex]);
+    res.status(200).json(arr[userIndex]);
 })
+
+// app.delete('/users/:id', (req, res) => {
+//     const deleteId = parseInt(req.params.id);
+//
+//     if(deleteId === -1) {
+//         return res.status(404).json('Item not found');
+//     } else {
+//         arr.splice(deleteId, 1);
+//         res.status(200).json(`Item with ID: ${deleteId} deleted successfully.`);
+//     }
+// })
