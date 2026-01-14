@@ -9,50 +9,54 @@ app.use(cors({
 app.use(bodyParser.json());
 const port = 3000;
 
-const arr= [
-    {id: 0, email: 'JohnDoe@gmail.com', pass: '123456'},
+let nextUserId = 1
+
+let users = [
+    { id: 0, email: 'JohnDose@gmail.com', pass: '123456' }
 ];
-app.get("/", (req, res) => {
-    res.status(200).json(arr[req.params.index]);
+app.get("/:index", (req, res) => {
+    res.status(200).json(users[JSON.parse(req.params.index)]);
 })
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
 })
 
-app.post('/users', (req, res) => {
-    const {email, password} = req.body;
-    if(!email || !password) {
-        return res.status(400).send('Valid email and password are required');
-    } else {
-        arr.push(req.body);
-        console.log('User created: ', arr);
-        res.status(201).json(arr);
+app.post("/users", (req, res) => {
+    const{email, pass} = req.body;
+    if(!pass || !email){
+        res.status(400).json({error: 'Please enter a valid email and name'});
     }
-
+    else {
+        const newUser = {id: nextUserId++, email, pass};
+        users.push(newUser);
+        console.log('user created', newUser);
+        res.status(201).json(newUser);
+    }
 });
 
 app.put('/users/:id', (req, res) => {
     const userId = parseInt(req.params.id);
-    const {email, password, id} = req.body;
-    const userIndex = arr.findIndex(u => u.id === userId);
-
-    if(userIndex === -1) {
-        return res.status(404).send('User not found');
+    const{newEmail, newPass} = req.body;
+    const userIndex = users.findIndex(user => user.id === userId);
+    if(userIndex === -1){
+        return res.status(404).send({error: 'User not found'});
     }
-
-    arr[userIndex] = {email, password, id};
-    console.log('User updated:', arr[userIndex]);
-    res.status(200).json(arr[userIndex]);
-})
+    users[userIndex] = {userId, newEmail, newPass};
+    console.log('user updated', users[userIndex]);
+    res.status(200).json(users[userIndex]);
+},)
 
 app.delete('/users/:id', (req, res) => {
     const deleteId = parseInt(req.params.id);
-
-    if(deleteId === -1) {
-        return res.status(404).json('Item not found');
-    } else {
-        arr.splice(deleteId, 1);
-        res.status(200).json(`Item with ID: ${deleteId} deleted successfully.`);
+    if (deleteId === -1) {
+        return  res.status(404).json({ message: 'Item not found' });
+    }
+    else{
+        console.log("User deleted at, "+deleteId +" remainingItems" +users);
+        users.splice(deleteId, 1);
+        res.status(200).json({ message: `Item with ID: ${deleteId} deleted successfully`, remainingItems: users});
     }
 })
+
+
