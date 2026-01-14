@@ -9,7 +9,9 @@ app.use(cors({
 app.use(bodyParser.json());
 const port = 3000;
 
-const arr= [];
+const arr= [
+    {id: 0, email: 'JohnDoe@gmail.com', pass: '123456'},
+];
 app.get("/", (req, res) => {
     res.status(200).json(arr[req.params.index]);
 })
@@ -44,13 +46,13 @@ app.put('/users/:id', (req, res) => {
     res.status(200).json(arr[userIndex]);
 })
 
-// app.delete('/users/:id', (req, res) => {
-//     const deleteId = parseInt(req.params.id);
-//
-//     if(deleteId === -1) {
-//         return res.status(404).json('Item not found');
-//     } else {
-//         arr.splice(deleteId, 1);
-//         res.status(200).json(`Item with ID: ${deleteId} deleted successfully.`);
-//     }
-// })
+app.delete('/users/:id', (req, res) => {
+    const deleteId = parseInt(req.params.id);
+
+    if(deleteId === -1) {
+        return res.status(404).json('Item not found');
+    } else {
+        arr.splice(deleteId, 1);
+        res.status(200).json(`Item with ID: ${deleteId} deleted successfully.`);
+    }
+})
